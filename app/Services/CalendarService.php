@@ -27,8 +27,8 @@ class CalendarService {
 
         $event->name = 'A new event';
         $event->description = 'Event description';
-        $event->startDateTime = Carbon\Carbon::now();
-        $event->endDateTime = Carbon\Carbon::now()->addHour();
+        $event->startDateTime = Carbon::now();
+        $event->endDateTime = Carbon::now()->addHour();
         $event->addAttendee([
             'email' => 'john@example.com',
             'name' => 'John Doe',
@@ -43,8 +43,8 @@ class CalendarService {
     public static function addEventSatic(){
         Event::create([
             'name' => 'A new event Static',
-            'startDateTime' => Carbon\Carbon::now(),
-            'endDateTime' => Carbon\Carbon::now()->addHour(),
+            'startDateTime' => Carbon::now(),
+            'endDateTime' => Carbon::now()->addHour(),
          ]);
     }
 
