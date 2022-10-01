@@ -5,15 +5,16 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\GoogleCalendar\Event;
+use Carbon\Carbon;
 
 class CalendarService {
 
-    public static function getEventbyId($idEvent){
-        Event::find($idEvent);
+    public static function getCalendarId($idcalendar){
+        return Event::get2($idcalendar);
     }
 
     public static function getAllEvent(){
-        $events = Event::get();
+        return $events = Event::get('03890b528576b8dd8c1ea873042149496f92272364efa16c3b4a61f226c3fe18@group.calendar.google.com');
     }
 
     public static function getEventFirst(){
@@ -49,12 +50,13 @@ class CalendarService {
 
     public static function addEventAllDay(){
         $event = new Event;
-
+        
+        $event->calendarId = 'nietojr1@gmail.com';
         $event->name = 'A new full day event';
         $event->description = 'Event description';
-        $event->startDate = Carbon\Carbon::now();
-        $event->endDate = Carbon\Carbon::now()->addDay();
-        
+        $event->startDate = Carbon::now();
+        $event->endDate = Carbon::now()->addDay();
+
         $event->save();
     }
 
@@ -81,7 +83,4 @@ class CalendarService {
 
     }
 
-
-
 }
-

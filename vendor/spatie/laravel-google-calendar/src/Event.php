@@ -19,7 +19,7 @@ class Event
     public $googleEvent;
 
     /** @var string */
-    protected $calendarId;
+     public $calendarId;
 
     /** @var array */
     protected $attendees;
@@ -52,7 +52,9 @@ class Event
      *
      * @return mixed
      */
-    public static function create(array $properties, string $calendarId = null, $optParams = [])
+    
+    
+     public static function create(array $properties, string $calendarId, $optParams = [])
     {
         $event = new static;
 
@@ -74,7 +76,40 @@ class Event
         return $event->quickSave($text);
     }
 
-    public static function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
+    public static function get2(string $calendarId): Collection
+    {
+        $googleCalendar = GoogleCalendarFactory::createForCalendarId($calendarId);
+
+        $googleEvents = $googleCalendar->listEvents(null, null, []);
+
+        $googleEventsList = $googleEvents->getItems();
+
+        while ($googleEvents->getNextPageToken()) {
+            $queryParameters['pageToken'] = $googleEvents->getNextPageToken();
+
+            $googleEvents = $googleCalendar->listEvents(null, null, []);
+
+            $googleEventsList = array_merge($googleEventsList, $googleEvents->getItems());
+        }
+
+        $useUserOrder = isset($queryParameters['orderBy']);
+
+        return collect($googleEventsList)
+            ->map(function (Google_Service_Calendar_Event $event) use ($calendarId) {
+                return static::createFromGoogleCalendarEvent($event, $calendarId);
+            })
+            ->sortBy(function (self $event, $index) use ($useUserOrder) {
+                if ($useUserOrder) {
+                    return $index;
+                }
+
+                return $event->sortDate;
+            })
+            ->values();
+    }
+
+
+    public static function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId): Collection
     {
         $googleCalendar = static::getGoogleCalendar($calendarId);
 
@@ -106,7 +141,7 @@ class Event
             ->values();
     }
 
-    public static function find($eventId, string $calendarId = null): self
+    public static function find($eventId, string $calendarId): self
     {
         $googleCalendar = static::getGoogleCalendar($calendarId);
 
@@ -235,9 +270,14 @@ class Event
         return $this->calendarId;
     }
 
-    protected static function getGoogleCalendar(string $calendarId = null): GoogleCalendar
+    protected static function getGoogleCalendar(string $calendarId): GoogleCalendar
     {
-        $calendarId = $calendarId ?? config('google-calendar.calendar_id');
+
+        return GoogleCalendarFactory::createForCalendarId($calendarId);
+    }
+
+    protected static function getGoogleCalendarId(string $calendarId): GoogleCalendar
+    {
 
         return GoogleCalendarFactory::createForCalendarId($calendarId);
     }

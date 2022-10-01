@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class CalendarController extends Controller {
 
-    function getEventCalendarByIdEvent($idEvent) {
-        return CalendarService::getEventbyId($idEvent);
+    function getEventCalendarByIdCalendar($idcalendar) {
+        return CalendarService::getCalendarId($idcalendar);
     }
 
     function getEventCalendarAllEvent() {
