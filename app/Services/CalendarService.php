@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Spatie\GoogleCalendar\Event;
+use App\Models\Event;
 use Carbon\Carbon;
 
 class CalendarService {
